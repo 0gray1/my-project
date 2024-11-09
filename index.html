@@ -258,12 +258,46 @@
         }
 
         function parseTime(timeStr) {
-            const [hour, rest] = timeStr.trim().split(':');
+            // Extract the time part if it contains both date and time
+            let timePart = timeStr.trim();
+            if (timePart.includes('-')) {
+                timePart = timePart.split('-')[0].trim();
+            }
+            
+            const [hour, rest] = timePart.split(':');
             const [minute, period] = rest.split(' ');
             let h = parseInt(hour);
+            
+            // Handle AM/PM conversion
             if (period === 'PM' && h !== 12) h += 12;
             if (period === 'AM' && h === 12) h = 0;
+            
             return h * 60 + parseInt(minute);
+        }
+
+        function parseTimeRange(timeStr) {
+            if (!timeStr.includes('-')) {
+                const start = parseTime(timeStr);
+                return { start, end: start + 15 };
+            }
+
+            let [startStr, endStr] = timeStr.split('-').map(t => t.trim());
+            
+            // If end time doesn't have AM/PM, use the period from start time
+            if (!endStr.includes('M')) {
+                const period = startStr.includes('PM') ? 'PM' : 'AM';
+                // Handle special case where end time crosses over to PM
+                if (parseTime(startStr) > parseTime(endStr + ' ' + period)) {
+                    endStr += ' PM';
+                } else {
+                    endStr += ' ' + period;
+                }
+            }
+
+            return {
+                start: parseTime(startStr),
+                end: parseTime(endStr)
+            };
         }
 
         function isCurrentTimeBlock(timeStr) {
@@ -271,25 +305,12 @@
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
             const wakeTime = parseTime('7:30 AM');
 
-            // Special handling for sleep block (11:00 PM)
+            // Special handling for sleep block
             if (timeStr === '11:00 PM') {
                 return currentMinutes < wakeTime || currentMinutes >= parseTime('11:00 PM');
             }
 
-            if (!timeStr.includes('-')) {
-                // Single time point - 15 min window
-                const start = parseTime(timeStr);
-                return currentMinutes >= start && currentMinutes < start + 15;
-            }
-
-            // Time range
-            const [startStr, endStr] = timeStr.split('-');
-            const start = parseTime(startStr);
-            
-            // Add PM/AM to end time if missing
-            const period = startStr.includes('PM') ? 'PM' : 'AM';
-            const end = parseTime(endStr.includes('M') ? endStr : `${endStr} ${period}`);
-
+            const { start, end } = parseTimeRange(timeStr);
             return currentMinutes >= start && currentMinutes < end;
         }
 
