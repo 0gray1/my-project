@@ -157,13 +157,13 @@
                 day: 'numeric' 
             };
             document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
-            return now.toLocaleString('en-US', { weekday: 'long' });
         }
 
         function displaySchedule() {
             const scheduleContent = document.getElementById('scheduleContent');
-            const currentDay = updateDate();
-            const daySchedule = schedule[currentDay] || schedule['Friday']; // Default to Friday's schedule
+            const now = new Date();
+            const weekday = now.toLocaleString('en-US', { weekday: 'long' });
+            const daySchedule = schedule[weekday] || schedule['Friday']; // Default to Friday's schedule
 
             if (daySchedule) {
                 scheduleContent.innerHTML = daySchedule.map(([time, activity]) => `
@@ -178,10 +178,14 @@
         }
 
         // Initialize
+        updateDate();
         displaySchedule();
 
         // Update date and schedule every minute
-        setInterval(displaySchedule, 60000);
+        setInterval(() => {
+            updateDate();
+            displaySchedule();
+        }, 60000);
     </script>
 </body>
 </html>
