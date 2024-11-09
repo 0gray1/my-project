@@ -288,7 +288,7 @@
             // Split into start and end times
             const [startStr, endStr] = time_obj.split('-').map(t => t.trim());
 
-            time_mode2 = startStr.slice(startStr.length-2, startStr.length)
+            let time_mode2 = startStr.slice(startStr.length-2, startStr.length)
             
             let is_pm2 = false
             if (time_mode === "PM") {
