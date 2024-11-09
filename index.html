@@ -258,14 +258,11 @@
         };
 
         function parseTime(timeStr, isPm) {
-            // Handle empty or invalid input
-            if (!timeStr) return null;
-            
             let timeList = timeStr.split(':')
             let hours = parseInt(timeList[0])
             let minutes = parseInt(timeList[1])
 
-            if (isPm) {
+            if (isPm && !(hours === 12 && minutes === 0)) {
                 hours += 12
             }
             
@@ -280,35 +277,37 @@
                 return { start, end: start };
             }
 
-            // Formatted like 7:30 - 8:00 AM
-            let len_timestr = timeStr.length
-            let time_mode = timeStr.slice(len_timestr-2, len_timestr)
-            let time_obj = timeStr.slice(0, len_timestr-3)
+            // Formatted like 7:30 - 8:00 
             
             // Split into start and end times
-            const [startStr, endStr] = time_obj.split('-').map(t => t.trim());
-
-            let time_mode2 = startStr.slice(startStr.length-2, startStr.length)
+            const [startStr, endStr] = timeStr.split('-').map(t => t.trim());
+          
+            let len_startstr = startStr.length
+            let time_mode = startStr.slice(len_startstr-2, len_startstr)
             
-            let is_pm2 = false
+            let len_endStr = endStr.length
+            let time_mode2 = endStr.slice(len_endStr-2, len_endStr)
+         
+            
+            let is_pm1 = false;
             if (time_mode === "PM") {
-                is_pm2 = true;
+              is_pm1 = true;
+            }
+          
+            let is_pm2 = is_pm1;
+            if (time_mode2 === "AM") {
+              is_pm2 = false;
+            }
+            if (time_mode2 === "PM") {
+              is_pm2 = true;
             }
 
-            let is_pm1 = is_pm2
-            if (time_mode2 === "PM") {
-                is_pm1 = true;
-            }
-            if (time_mode2 ==== "AM") {
-                is_pm1 = false;
-            }
 
             let start = parseTime(startStr, is_pm1);
             let end = parseTime(endStr, is_pm2);
             
             return { start, end };
         }
-
         function isCurrentTimeBlock(timeStr) {
             const now = new Date();
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
