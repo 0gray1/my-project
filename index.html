@@ -312,12 +312,11 @@
         function isCurrentTimeBlock(timeStr) {
             const now = new Date();
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
-            console.log(currentMinutes);
             
             // Special handling for sleep block
             if (timeStr === '11:00 PM') {
-                const sleepStart = parseTime('11:00 PM');
-                const wakeTime = parseTime('7:30 AM');
+                const sleepStart = parseTime('11:00', true);
+                const wakeTime = parseTime('7:30', false);
                 return currentMinutes >= sleepStart || currentMinutes < wakeTime;
             }
 
@@ -325,9 +324,6 @@
 
             // For time ranges (blocks)
             if (timeStr.includes('-')) {
-                console.log(start)
-                console.log(end)
-                console.log(currentMinutes >= start && currentMinutes < end);
                 return currentMinutes >= start && currentMinutes < end;
             }
             
