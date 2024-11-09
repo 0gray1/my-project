@@ -283,10 +283,10 @@
         }
 
         function parseTimeRange(timeStr) {
-            // For single time points (like "7:30 AM"), create a 30-minute block
+            // For single time points (like "7:30 AM"), create a 5-minute block
             if (!timeStr.includes('-')) {
                 const start = parseTime(timeStr);
-                return { start, end: start + 30 };
+                return { start, end: start + 5 };  // Only 5 minutes for point-in-time events
             }
 
             // Split into start and end times
