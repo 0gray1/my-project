@@ -262,11 +262,11 @@
             if (!timeStr) return null;
             
             let timeList = timeStr.split(':')
-            let hour = parseInt(timeList[0])
-            let minute = parseInt(timeList[1])
+            let hours = parseInt(timeList[0])
+            let minutes = parseInt(timeList[1])
 
             if (isPm) {
-                hour += 12
+                hours += 12
             }
             
             return hours * 60 + minutes;
