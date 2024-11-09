@@ -257,50 +257,40 @@
             ]
         }
 
-        function convertToMinutes(timeStr) {
-            // Extract hours and minutes, handling both formats:
-            // "10:00 PM" and "10:00 - 11:00 PM"
-            const timePart = timeStr.split('-')[0].trim();
-            const [hours, minutesPart] = timePart.split(':');
-            const [minutes, period] = minutesPart.split(' ');
-            
-            let hour = parseInt(hours);
-            if (period === 'PM' && hour !== 12) {
-                hour += 12;
-            } else if (period === 'AM' && hour === 12) {
-                hour = 0;
-            }
-            
-            return hour * 60 + parseInt(minutes);
+        function parseTime(timeStr) {
+            const [hour, rest] = timeStr.trim().split(':');
+            const [minute, period] = rest.split(' ');
+            let h = parseInt(hour);
+            if (period === 'PM' && h !== 12) h += 12;
+            if (period === 'AM' && h === 12) h = 0;
+            return h * 60 + parseInt(minute);
         }
 
         function isCurrentTimeBlock(timeStr) {
             const now = new Date();
-            const currentTimeInMinutes = now.getHours() * 60 + now.getMinutes();
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const wakeTime = parseTime('7:30 AM');
+
+            // Special handling for sleep block (11:00 PM)
+            if (timeStr === '11:00 PM') {
+                return currentMinutes < wakeTime || currentMinutes >= parseTime('11:00 PM');
+            }
 
             if (!timeStr.includes('-')) {
-                // Single time point (like "11:00 PM")
-                const startTime = convertToMinutes(timeStr);
-                return currentTimeInMinutes >= startTime && currentTimeInMinutes < startTime + 15;
+                // Single time point - 15 min window
+                const start = parseTime(timeStr);
+                return currentMinutes >= start && currentMinutes < start + 15;
             }
 
-            // Time range (like "9:45 - 10:00 PM")
-            const [start, end] = timeStr.split('-').map(t => t.trim());
-            const startTimeInMinutes = convertToMinutes(start);
+            // Time range
+            const [startStr, endStr] = timeStr.split('-');
+            const start = parseTime(startStr);
             
-            // For the end time, we need to possibly append the AM/PM
-            const period = start.includes('PM') ? 'PM' : 'AM';
-            const endWithPeriod = end.includes('M') ? end : `${end} ${period}`;
-            const endTimeInMinutes = convertToMinutes(endWithPeriod);
+            // Add PM/AM to end time if missing
+            const period = startStr.includes('PM') ? 'PM' : 'AM';
+            const end = parseTime(endStr.includes('M') ? endStr : `${endStr} ${period}`);
 
-            const isInBlock = currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes;
-            
-            if (isInBlock) {
-                console.log(`Current time ${now.getHours()}:${now.getMinutes()} (${currentTimeInMinutes} minutes)`);
-                console.log(`Block "${timeStr}" spans ${startTimeInMinutes} to ${endTimeInMinutes} minutes`);
-            }
-            
-            return isInBlock;
+            return currentMinutes >= start && currentMinutes < end;
         }
 
         function updateDateTime() {
