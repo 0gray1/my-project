@@ -257,58 +257,61 @@
             ]
         }
 
+        function getTimeObject(timeStr) {
+            const [hours, minutesPart] = timeStr.split(':');
+            const [minutes, period] = minutesPart.split(' ');
+            let hour = parseInt(hours);
+            
+            if (period === 'PM' && hour !== 12) {
+                hour += 12;
+            } else if (period === 'AM' && hour === 12) {
+                hour = 0;
+            }
+            
+            return {
+                hour,
+                minute: parseInt(minutes)
+            };
+        }
+
         function parseTimeString(timeStr) {
             if (!timeStr.includes('-')) {
-                const time = new Date(`2000/01/01 ${timeStr}`);
+                const time = getTimeObject(timeStr);
                 return {
                     start: time,
-                    end: new Date(time.getTime() + 15 * 60000)
+                    end: {
+                        hour: time.hour,
+                        minute: time.minute + 15
+                    }
                 };
             }
 
-            let [startStr, endStr] = timeStr.split('-').map(t => t.trim());
-            
-            // If end time doesn't include PM/AM, use the one from start time
+            const [startStr, endStr] = timeStr.split('-').map(t => t.trim());
+            let endTime = endStr;
             if (!endStr.includes('M')) {
                 const period = startStr.includes('PM') ? 'PM' : 'AM';
-                endStr = `${endStr} ${period}`;
+                endTime = `${endStr} ${period}`;
             }
-
-            const start = new Date(`2000/01/01 ${startStr}`);
-            const end = new Date(`2000/01/01 ${endStr}`);
-
-            // Special handling for hour transitions
-            if (end.getMinutes() === 0 && start.getMinutes() === 45) {
-                end.setMilliseconds(-1); // Set to just before the hour
-            }
-
-            return { start, end };
+            
+            return {
+                start: getTimeObject(startStr),
+                end: getTimeObject(endTime)
+            };
         }
 
         function isCurrentTimeBlock(timeStr) {
             const now = new Date();
-            const currentTime = new Date(`2000/01/01 ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
+            const currentHour = now.getHours();
+            const currentMinute = now.getMinutes();
+            
             const { start, end } = parseTimeString(timeStr);
             
-            // For time ranges ending in "PM" that cross the hour boundary (like "9:45 - 10:00 PM")
-            // Ensure proper handling of the hour change
-            if (timeStr.includes('-')) {
-                const [startStr, endStr] = timeStr.split('-').map(t => t.trim());
-                if (endStr.includes('PM') && startStr.includes(':45') && endStr.includes(':00')) {
-                    // Adjust end time to be strictly at the beginning of the next hour
-                    end.setMinutes(0);
-                }
-            }
-
-            // Normal time range check
-            const isActive = currentTime >= start && currentTime < end;
+            // Convert times to minutes since midnight for easier comparison
+            const currentTimeInMinutes = currentHour * 60 + currentMinute;
+            const startTimeInMinutes = start.hour * 60 + start.minute;
+            const endTimeInMinutes = end.hour * 60 + end.minute;
             
-            // Only fall within one block
-            if (isActive) {
-                console.log(`Block ${timeStr} is active: ${currentTime} falls between ${start} and ${end}`);
-            }
-            
-            return isActive;
+            return currentTimeInMinutes >= startTimeInMinutes && currentTimeInMinutes < endTimeInMinutes;
         }
 
         function updateDateTime() {
