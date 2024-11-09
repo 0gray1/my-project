@@ -11,6 +11,8 @@
             --block-bg: #f3f4f6;
             --accent-color: #6366f1;
             --hover-bg: #f9fafb;
+            --active-block-bg: #e0e7ff;
+            --active-block-border: #818cf8;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -20,6 +22,8 @@
                 --block-bg: rgb(37, 37, 37);
                 --accent-color: #a5b4fc;
                 --hover-bg: rgb(45, 45, 45);
+                --active-block-bg: rgba(167, 139, 250, 0.1);
+                --active-block-border: #a5b4fc;
             }
         }
 
@@ -56,6 +60,13 @@
             opacity: 0.9;
         }
 
+        .current-time {
+            font-size: 1rem;
+            color: var(--text-color);
+            opacity: 0.8;
+            margin-top: 0.25rem;
+        }
+
         .schedule {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -70,11 +81,17 @@
             background-color: var(--block-bg);
             transition: all 0.2s ease;
             font-size: 0.95rem;
+            border: 2px solid transparent;
         }
 
         .time-block:hover {
             transform: translateX(2px);
             background-color: var(--hover-bg);
+        }
+
+        .time-block.active {
+            background-color: var(--active-block-bg);
+            border-color: var(--active-block-border);
         }
 
         .time {
@@ -103,6 +120,7 @@
     <div class="container">
         <div class="header">
             <div class="date" id="currentDate">Loading date...</div>
+            <div class="current-time" id="currentTime">Loading time...</div>
         </div>
         <div class="schedule" id="scheduleContent">
             <!-- Schedule content will be populated by JavaScript -->
@@ -110,6 +128,7 @@
     </div>
 
     <script>
+        // Your existing schedule data here
         const schedule = {
             'Monday': [
                 ['7:30 AM', 'Wake up'],
@@ -236,17 +255,59 @@
                 ['10:00 - 11:00 PM', 'Screen-free activities'],
                 ['11:00 PM', 'Sleep']
             ]
-        };
+        }
 
-        function updateDate() {
+        function parseTimeString(timeStr) {
+            // Handle single time (e.g., "7:30 AM")
+            if (!timeStr.includes('-')) {
+                return {
+                    start: new Date(`2000/01/01 ${timeStr}`),
+                    end: new Date(`2000/01/01 ${timeStr}`)
+                };
+            }
+
+            // Handle time range (e.g., "7:30 - 8:00 AM")
+            const [start, end] = timeStr.split('-').map(t => t.trim());
+            const endTime = end.includes('M') ? end : `${end} ${start.split(' ')[2]}`;
+            return {
+                start: new Date(`2000/01/01 ${start}`),
+                end: new Date(`2000/01/01 ${endTime}`)
+            };
+        }
+
+        function isCurrentTimeBlock(timeStr) {
             const now = new Date();
-            const options = { 
+            const currentTime = new Date(`2000/01/01 ${now.getHours()}:${now.getMinutes()}`);
+            const { start, end } = parseTimeString(timeStr);
+
+            // For single time points, create a 15-minute window
+            if (start.getTime() === end.getTime()) {
+                const endTime = new Date(start.getTime() + 15 * 60000);
+                return currentTime >= start && currentTime < endTime;
+            }
+
+            return currentTime >= start && currentTime < end;
+        }
+
+        function updateDateTime() {
+            const now = new Date();
+            
+            // Update date
+            const dateOptions = { 
                 weekday: 'long', 
                 year: 'numeric', 
                 month: 'long', 
                 day: 'numeric' 
             };
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+            
+            // Update time
+            const timeOptions = {
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: true
+            };
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
         }
 
         function displaySchedule() {
@@ -257,7 +318,7 @@
 
             if (daySchedule) {
                 scheduleContent.innerHTML = daySchedule.map(([time, activity]) => `
-                    <div class="time-block">
+                    <div class="time-block ${isCurrentTimeBlock(time) ? 'active' : ''}">
                         <div class="time">${time}</div>
                         <div class="activity">${activity}</div>
                     </div>
@@ -268,12 +329,12 @@
         }
 
         // Initialize
-        updateDate();
+        updateDateTime();
         displaySchedule();
 
         // Update every minute
         setInterval(() => {
-            updateDate();
+            updateDateTime();
             displaySchedule();
         }, 60000);
     </script>
