@@ -287,14 +287,24 @@
             
             // Split into start and end times
             const [startStr, endStr] = time_obj.split('-').map(t => t.trim());
+
+            time_mode2 = startStr.slice(startStr.length-2, startStr.length)
             
-            let is_pm = false
+            let is_pm2 = false
             if (time_mode === "PM") {
-                is_pm = true;
+                is_pm2 = true;
             }
 
-            let start = parseTime(startStr, is_pm);
-            let end = parseTime(endStr, is_pm);
+            let is_pm1 = !(!is_pm2)
+            if (time_mode2 === "PM") {
+                is_pm1 = true;
+            }
+            if (time_mode2 ==== "AM") {
+                is_pm1 = false;
+            }
+
+            let start = parseTime(startStr, is_pm1);
+            let end = parseTime(endStr, is_pm2);
             
             return { start, end };
         }
