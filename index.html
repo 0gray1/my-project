@@ -283,10 +283,11 @@
         }
 
         function parseTimeRange(timeStr) {
-            // For single time points (like "7:30 AM"), create a 5-minute block
+            // For single time points (like "7:30 AM")
             if (!timeStr.includes('-')) {
                 const start = parseTime(timeStr);
-                return { start, end: start + 5 };  // Only 5 minutes for point-in-time events
+                if (start === null) return { start: null, end: null };
+                return { start, end: start };
             }
 
             // Split into start and end times
@@ -327,8 +328,14 @@
             
             // Ensure we have valid times
             if (start === null || end === null) return false;
+
+            // For time ranges (blocks)
+            if (timeStr.includes('-')) {
+                return currentMinutes >= start && currentMinutes < end;
+            }
             
-            return currentMinutes >= start && currentMinutes < end;
+            // For single point events (like wake up)
+            return currentMinutes >= start && currentMinutes < (start + 1);
         }
 
         function updateDateTime() {
