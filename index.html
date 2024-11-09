@@ -35,12 +35,12 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.4;
+            line-height: 1.3;
             padding: 0.5rem;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             background-color: var(--bg-color);
             border-radius: 8px;
@@ -48,53 +48,50 @@
         }
 
         .header {
-            padding: 0.75rem 1rem;
+            padding: 0.5rem 0.75rem;
             margin-bottom: 0.5rem;
         }
 
         .date {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--accent-color);
         }
 
         .schedule {
-            padding: 0 0.5rem;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.4rem;
+            padding: 0 0.4rem;
         }
 
         .time-block {
             display: flex;
-            margin-bottom: 0.5rem;
-            padding: 0.5rem 0.75rem;
+            padding: 0.35rem 0.5rem;
             border-radius: 6px;
             background-color: var(--highlight-bg);
             transition: all 0.2s ease;
+            font-size: 0.85rem;
         }
 
         .time-block:hover {
-            transform: translateX(4px);
+            transform: translateX(2px);
             background-color: var(--hover-bg);
         }
 
         .time {
-            flex: 0 0 110px;
+            flex: 0 0 105px;
             font-weight: 600;
             color: var(--accent-color);
-            font-size: 0.9rem;
         }
 
         .activity {
             flex: 1;
-            font-size: 0.9rem;
         }
 
-        @media (max-width: 600px) {
-            .time-block {
-                padding: 0.4rem 0.6rem;
-            }
-            
-            .time {
-                flex: 0 0 90px;
+        @media (max-width: 768px) {
+            .schedule {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -111,24 +108,6 @@
 
     <script>
         const schedule = {
-            'Thursday': [
-                ['7:30 AM', 'Wake up'],
-                ['7:30 - 8:00 AM', 'Morning routine (shower, get ready)'],
-                ['8:00 - 8:15 AM', 'Quick breakfast'],
-                ['8:15 AM', 'Leave for school'],
-                ['3:45 PM', 'Return from school'],
-                ['3:45 - 4:15 PM', 'Break and snack'],
-                ['4:15 - 5:15 PM', 'Homework/college applications'],
-                ['5:15 - 5:45 PM', 'Exercise'],
-                ['5:45 - 6:15 PM', 'Shower and relax'],
-                ['6:15 - 6:45 PM', 'Dinner'],
-                ['6:45 - 8:15 PM', 'Homework/college applications'],
-                ['8:15 - 8:45 PM', 'Break (free time)'],
-                ['8:45 - 9:45 PM', 'Homework/college applications'],
-                ['9:45 - 10:00 PM', 'Prepare for screen-free time'],
-                ['10:00 - 11:00 PM', 'Screen-free activities'],
-                ['11:00 PM', 'Sleep']
-            ],
             'Friday': [
                 ['7:30 AM', 'Wake up'],
                 ['7:30 - 8:00 AM', 'Morning routine (shower, get ready)'],
@@ -164,7 +143,7 @@
             const scheduleContent = document.getElementById('scheduleContent');
             const now = new Date();
             const weekday = now.toLocaleString('en-US', { weekday: 'long' });
-            const daySchedule = schedule[weekday] || schedule['Friday']; // Default to Friday's schedule
+            const daySchedule = schedule[weekday] || schedule['Friday'];
 
             if (daySchedule) {
                 scheduleContent.innerHTML = daySchedule.map(([time, activity]) => `
@@ -182,7 +161,7 @@
         updateDate();
         displaySchedule();
 
-        // Update date and schedule every minute
+        // Update every minute
         setInterval(() => {
             updateDate();
             displaySchedule();
