@@ -283,23 +283,24 @@
             const [startStr, endStr] = timeStr.split('-').map(t => t.trim());
           
             let len_startstr = startStr.length
-            let time_mode = startStr.slice(len_startstr-2, len_startstr)
+            let time_mode1 = startStr.slice(len_startstr-2, len_startstr)
             
             let len_endStr = endStr.length
             let time_mode2 = endStr.slice(len_endStr-2, len_endStr)
-         
+            console.log(time_mode1)
+            console.log(time_mode2)
             
-            let is_pm1 = false;
-            if (time_mode === "PM") {
-              is_pm1 = true;
-            }
-          
-            let is_pm2 = is_pm1;
-            if (time_mode2 === "AM") {
-              is_pm2 = false;
-            }
+            let is_pm2 = false;
             if (time_mode2 === "PM") {
               is_pm2 = true;
+            }
+          
+            let is_pm1 = is_pm2;
+            if (time_mode1 === "AM") {
+              is_pm1 = false;
+            }
+            if (time_mode1 === "PM") {
+              is_pm1 = true;
             }
 
 
@@ -311,6 +312,7 @@
         function isCurrentTimeBlock(timeStr) {
             const now = new Date();
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            console.log(currentMinutes);
             
             // Special handling for sleep block
             if (timeStr === '11:00 PM') {
@@ -320,12 +322,12 @@
             }
 
             const { start, end } = parseTimeRange(timeStr);
-            
-            // Ensure we have valid times
-            if (start === null || end === null) return false;
 
             // For time ranges (blocks)
             if (timeStr.includes('-')) {
+                console.log(start)
+                console.log(end)
+                console.log(currentMinutes >= start && currentMinutes < end);
                 return currentMinutes >= start && currentMinutes < end;
             }
             
