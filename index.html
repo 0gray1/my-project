@@ -262,7 +262,7 @@
             let hours = parseInt(timeList[0])
             let minutes = parseInt(timeList[1])
 
-            if (isPm && !(hours === 12 && minutes === 0)) {
+            if (isPm && !(hours === 12)) {
                 hours += 12
             }
             
@@ -287,8 +287,6 @@
             
             let len_endStr = endStr.length
             let time_mode2 = endStr.slice(len_endStr-2, len_endStr)
-            console.log(time_mode1)
-            console.log(time_mode2)
             
             let is_pm2 = false;
             if (time_mode2 === "PM") {
@@ -324,6 +322,11 @@
 
             // For time ranges (blocks)
             if (timeStr.includes('-')) {
+                console.log(timeStr)
+                console.log(start)
+                console.log(end)
+                console.log(currentMinutes)
+                console.log("break")
                 return currentMinutes >= start && currentMinutes < end;
             }
             
