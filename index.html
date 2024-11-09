@@ -257,26 +257,16 @@
             ]
         };
 
-        function parseTime(timeStr) {
+        function parseTime(timeStr, isPm) {
             // Handle empty or invalid input
             if (!timeStr) return null;
             
-            // Extract the first time if it's a range
-            let time = timeStr.split('-')[0].trim();
-            
-            // Parse hour, minute, and period
-            const match = time.match(/(\d+):?(\d*)?\s*(AM|PM)/i);
-            if (!match) return null;
-            
-            let [_, hours, minutes, period] = match;
-            hours = parseInt(hours);
-            minutes = minutes ? parseInt(minutes) : 0;
-            
-            // Convert to 24-hour format
-            if (period.toUpperCase() === 'PM' && hours !== 12) {
-                hours += 12;
-            } else if (period.toUpperCase() === 'AM' && hours === 12) {
-                hours = 0;
+            let timeList = timeStr.split(':')
+            let hour = parseInt(timeList[0])
+            let minute = parseInt(timeList[1])
+
+            if (isPm) {
+                hour += 12
             }
             
             return hours * 60 + minutes;
@@ -290,25 +280,21 @@
                 return { start, end: start };
             }
 
+            // Formatted like 7:30 - 8:00 AM
+            let len_timestr = timeStr.length
+            let time_mode = timeStr.slice(len_timestr-2, len_timestr)
+            let time_obj = timeStr.slice(0, len_timestr-3)
+            
             // Split into start and end times
-            const [startStr, endStr] = timeStr.split('-').map(t => t.trim());
+            const [startStr, endStr] = time_obj.split('-').map(t => t.trim());
             
-            // Parse start time
-            const start = parseTime(startStr);
-            
-            // For end time, if AM/PM is missing, use the same period as start time
-            let end;
-            if (!endStr.includes('AM') && !endStr.includes('PM')) {
-                const period = startStr.includes('PM') ? 'PM' : 'AM';
-                end = parseTime(endStr + ' ' + period);
-                
-                // Handle cases where end time should be PM when start time is AM
-                if (end < start) {
-                    end = parseTime(endStr + ' PM');
-                }
-            } else {
-                end = parseTime(endStr);
+            let is_pm = false
+            if (time_mode === "PM") {
+                is_pm = true;
             }
+
+            let start = parseTime(startStr, is_pm);
+            let end = parseTime(endStr, is_pm);
             
             return { start, end };
         }
