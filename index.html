@@ -260,32 +260,36 @@
         function parseTimeString(timeStr) {
             // Handle single time (e.g., "7:30 AM")
             if (!timeStr.includes('-')) {
+                const time = new Date(`2000/01/01 ${timeStr}`);
                 return {
-                    start: new Date(`2000/01/01 ${timeStr}`),
-                    end: new Date(`2000/01/01 ${timeStr}`)
+                    start: time,
+                    end: new Date(time.getTime() + 15 * 60000) // 15 minutes window
                 };
             }
 
             // Handle time range (e.g., "7:30 - 8:00 AM")
-            const [start, end] = timeStr.split('-').map(t => t.trim());
-            const endTime = end.includes('M') ? end : `${end} ${start.split(' ')[2]}`;
-            return {
-                start: new Date(`2000/01/01 ${start}`),
-                end: new Date(`2000/01/01 ${endTime}`)
-            };
+            const [startStr, endStr] = timeStr.split('-').map(t => t.trim());
+            const startParts = startStr.split(' ');
+            const endParts = endStr.split(' ');
+            
+            // If end doesn't have AM/PM, use the period from start
+            const endTime = endParts[endParts.length - 1].includes('M') ? 
+                endStr : 
+                `${endStr} ${startParts[startParts.length - 1]}`;
+                
+            const start = new Date(`2000/01/01 ${startStr}`);
+            const end = new Date(`2000/01/01 ${endTime}`);
+            
+            return { start, end };
         }
 
         function isCurrentTimeBlock(timeStr) {
             const now = new Date();
-            const currentTime = new Date(`2000/01/01 ${now.getHours()}:${now.getMinutes()}`);
+            const currentTime = new Date(`2000/01/01 ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
             const { start, end } = parseTimeString(timeStr);
-
-            // For single time points, create a 15-minute window
-            if (start.getTime() === end.getTime()) {
-                const endTime = new Date(start.getTime() + 15 * 60000);
-                return currentTime >= start && currentTime < endTime;
-            }
-
+            
+            // Check if current time falls within the time block
+            // Use strict inequality for end time to prevent overlap
             return currentTime >= start && currentTime < end;
         }
 
