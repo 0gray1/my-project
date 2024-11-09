@@ -6,25 +6,20 @@
     <title>Daily Schedule</title>
     <style>
         :root {
-            /* Light mode colors (default) */
             --bg-color: #ffffff;
             --text-color: #374151;
-            --border-color: #e5e7eb;
-            --highlight-bg: #f3f4f6;
-            --accent-color: #4f46e5; /* Darker indigo for better light mode contrast */
+            --block-bg: #f3f4f6;
+            --accent-color: #6366f1;
             --hover-bg: #f9fafb;
-            --block-bg: #f8fafc; /* Slightly off-white for blocks */
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-color: #18181b;
+                --bg-color: rgb(25, 25, 25);
                 --text-color: #e4e4e7;
-                --border-color: #27272a;
-                --highlight-bg: #27272a;
+                --block-bg: rgb(37, 37, 37);
                 --accent-color: #a5b4fc;
-                --hover-bg: #3f3f46;
-                --block-bg: #27272a;
+                --hover-bg: rgb(45, 45, 45);
             }
         }
 
@@ -40,7 +35,6 @@
             color: var(--text-color);
             line-height: 1.4;
             padding: 0.75rem;
-            pointer-events: none;
         }
 
         .container {
@@ -49,12 +43,10 @@
             background-color: var(--bg-color);
             border-radius: 8px;
             overflow: hidden;
-            pointer-events: none;
         }
 
         .header {
             padding: 0.75rem 0.75rem 1rem 0.75rem;
-            pointer-events: auto;
         }
 
         .date {
@@ -69,7 +61,6 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 0.6rem;
             padding: 0 0.5rem;
-            pointer-events: auto;
         }
 
         .time-block {
@@ -77,15 +68,12 @@
             padding: 0.5rem 0.75rem;
             border-radius: 6px;
             background-color: var(--block-bg);
-            border: 1px solid var(--border-color);
             transition: all 0.2s ease;
             font-size: 0.95rem;
         }
 
         .time-block:hover {
             transform: translateX(2px);
-            border-color: var(--accent-color);
-            opacity: 0.95;
             background-color: var(--hover-bg);
         }
 
