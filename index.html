@@ -7,21 +7,23 @@
     <style>
         :root {
             --bg-color: #ffffff;
-            --text-color: #2c3e50;
-            --border-color: #e5e5e5;
-            --highlight-bg: #f8fafc;
-            --accent-color: #4299e1;
-            --hover-bg: #edf2f7;
+            --text-color: #374151;
+            --border-color: #e5e7eb;
+            --highlight-bg: #f3f4f6;
+            --accent-color: #6366f1;
+            --hover-bg: #f9fafb;
+            --block-bg: #ffffff;
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-color: #1a202c;
-                --text-color: #e2e8f0;
-                --border-color: #2d3748;
-                --highlight-bg: #2d3748;
-                --accent-color: #63b3ed;
-                --hover-bg: #3a4a5e;
+                --bg-color: #18181b;
+                --text-color: #e4e4e7;
+                --border-color: #27272a;
+                --highlight-bg: #27272a;
+                --accent-color: #a5b4fc;
+                --hover-bg: #3f3f46;
+                --block-bg: #27272a;
             }
         }
 
@@ -55,6 +57,7 @@
             font-size: 1.25rem;
             font-weight: 600;
             color: var(--accent-color);
+            opacity: 0.9;
         }
 
         .schedule {
@@ -68,20 +71,23 @@
             display: flex;
             padding: 0.5rem 0.75rem;
             border-radius: 6px;
-            background-color: var(--highlight-bg);
+            background-color: var(--block-bg);
+            border: 1px solid var(--border-color);
             transition: all 0.2s ease;
             font-size: 0.95rem;
         }
 
         .time-block:hover {
             transform: translateX(2px);
-            background-color: var(--hover-bg);
+            border-color: var(--accent-color);
+            opacity: 0.95;
         }
 
         .time {
             flex: 0 0 120px;
             font-weight: 600;
             color: var(--accent-color);
+            opacity: 0.9;
         }
 
         .activity {
