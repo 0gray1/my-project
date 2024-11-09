@@ -6,13 +6,14 @@
     <title>Daily Schedule</title>
     <style>
         :root {
+            /* Light mode colors (default) */
             --bg-color: #ffffff;
             --text-color: #374151;
             --border-color: #e5e7eb;
             --highlight-bg: #f3f4f6;
-            --accent-color: #6366f1;
+            --accent-color: #4f46e5; /* Darker indigo for better light mode contrast */
             --hover-bg: #f9fafb;
-            --block-bg: #ffffff;
+            --block-bg: #f8fafc; /* Slightly off-white for blocks */
         }
 
         @media (prefers-color-scheme: dark) {
@@ -39,7 +40,7 @@
             color: var(--text-color);
             line-height: 1.4;
             padding: 0.75rem;
-            pointer-events: none; /* Add this to disable pointer events at the top level */
+            pointer-events: none;
         }
 
         .container {
@@ -48,12 +49,12 @@
             background-color: var(--bg-color);
             border-radius: 8px;
             overflow: hidden;
-            pointer-events: none; /* Disable pointer events for container */
+            pointer-events: none;
         }
 
         .header {
             padding: 0.75rem 0.75rem 1rem 0.75rem;
-            pointer-events: auto; /* Re-enable pointer events for header content */
+            pointer-events: auto;
         }
 
         .date {
@@ -68,7 +69,7 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 0.6rem;
             padding: 0 0.5rem;
-            pointer-events: auto; /* Re-enable pointer events for schedule content */
+            pointer-events: auto;
         }
 
         .time-block {
@@ -85,6 +86,7 @@
             transform: translateX(2px);
             border-color: var(--accent-color);
             opacity: 0.95;
+            background-color: var(--hover-bg);
         }
 
         .time {
