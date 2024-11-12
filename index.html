@@ -13,6 +13,10 @@
             --hover-bg: #f9fafb;
             --active-block-bg: #e0e7ff;
             --active-block-border: #818cf8;
+            --switch-bg: #e5e7eb;
+            --switch-selected: #818cf8;
+            --switch-text: #4b5563;
+            --switch-text-selected: #ffffff;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -24,6 +28,10 @@
                 --hover-bg: rgb(45, 45, 45);
                 --active-block-bg: rgba(167, 139, 250, 0.1);
                 --active-block-border: #a5b4fc;
+                --switch-bg: rgb(45, 45, 45);
+                --switch-selected: #a5b4fc;
+                --switch-text: #e4e4e7;
+                --switch-text-selected: rgb(25, 25, 25);
             }
         }
 
@@ -65,6 +73,38 @@
             color: var(--text-color);
             opacity: 0.8;
             margin-top: 0.25rem;
+        }
+
+        /* Schedule Mode Switcher */
+        .mode-switcher {
+            display: flex;
+            background-color: var(--switch-bg);
+            border-radius: 8px;
+            padding: 0.25rem;
+            margin: 1rem 0.75rem;
+            gap: 0.25rem;
+        }
+
+        .mode-option {
+            flex: 1;
+            padding: 0.5rem;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--switch-text);
+            user-select: none;
+        }
+
+        .mode-option.active {
+            background-color: var(--switch-selected);
+            color: var(--switch-text-selected);
+        }
+
+        .mode-option:hover:not(.active) {
+            background-color: var(--hover-bg);
         }
 
         .schedule {
@@ -122,139 +162,363 @@
             <div class="date" id="currentDate">Loading date...</div>
             <div class="current-time" id="currentTime">Loading time...</div>
         </div>
+        <div class="mode-switcher">
+            <div class="mode-option active" data-mode="light">Light</div>
+            <div class="mode-option" data-mode="moderate">Moderate</div>
+            <div class="mode-option" data-mode="focused">Focused</div>
+        </div>
         <div class="schedule" id="scheduleContent">
             <!-- Schedule content will be populated by JavaScript -->
         </div>
     </div>
 
     <script>
-        // Your schedule data goes here
-        const schedule = {
-            'Monday': [
-                ['7:30 AM', 'Wake up'],
-                ['7:30 - 8:00 AM', 'Morning routine (shower, get ready)'],
-                ['8:00 - 8:15 AM', 'Quick breakfast'],
-                ['8:15 AM', 'Leave for school'],
-                ['4:25 PM', 'Return from school'],
-                ['4:25 - 4:55 PM', 'Break and snack'],
-                ['4:55 - 5:55 PM', 'Homework/college applications'],
-                ['5:55 - 6:25 PM', 'Exercise'],
-                ['6:25 - 6:55 PM', 'Shower and relax'],
-                ['6:55 - 7:25 PM', 'Dinner'],
-                ['7:25 - 8:55 PM', 'Homework/college applications'],
-                ['8:55 - 9:25 PM', 'Break (free time)'],
-                ['9:25 - 10:00 PM', 'Homework/college applications'],
-                ['10:00 - 11:00 PM', 'Screen-free activities'],
-                ['11:00 PM', 'Sleep']
-            ],
-            'Tuesday': [
-                ['7:30 AM', 'Wake up'],
-                ['7:30 - 8:00 AM', 'Morning routine (shower, get ready)'],
-                ['8:00 - 8:15 AM', 'Quick breakfast'],
-                ['8:15 AM', 'Leave for school'],
-                ['3:05 - 3:45 PM', 'Study/work at school'],
-                ['6:15 PM', 'Return from school'],
-                ['6:15 - 6:45 PM', 'Break and snack'],
-                ['6:45 - 7:15 PM', 'Light walk (exercise rest day)'],
-                ['7:15 - 7:45 PM', 'Dinner'],
-                ['7:45 - 9:45 PM', 'Homework/college applications'],
-                ['9:45 - 10:00 PM', 'Prepare for screen-free time'],
-                ['10:00 - 11:00 PM', 'Screen-free activities'],
-                ['11:00 PM', 'Sleep']
-            ],
-            'Wednesday': [
-                ['7:30 AM', 'Wake up'],
-                ['7:30 - 8:00 AM', 'Morning routine (shower, get ready)'],
-                ['8:00 - 8:15 AM', 'Quick breakfast'],
-                ['8:15 AM', 'Leave for school'],
-                ['3:45 PM', 'Return from school'],
-                ['3:45 - 4:15 PM', 'Break and snack'],
-                ['4:15 - 5:15 PM', 'Homework/college applications'],
-                ['5:15 - 5:45 PM', 'Exercise'],
-                ['5:45 - 6:15 PM', 'Shower and relax'],
-                ['6:15 - 6:45 PM', 'Dinner'],
-                ['6:45 - 7:15 PM', 'Homework/college applications'],
-                ['7:15 - 8:45 PM', 'Piano lesson (including travel time)'],
-                ['8:45 - 9:45 PM', 'Homework/college applications'],
-                ['9:45 - 10:00 PM', 'Prepare for screen-free time'],
-                ['10:00 - 11:00 PM', 'Screen-free activities'],
-                ['11:00 PM', 'Sleep']
-            ],
-            'Thursday': [
-                ['7:30 AM', 'Wake up'],
-                ['7:30 - 8:00 AM', 'Morning routine (shower, get ready)'],
-                ['8:00 - 8:15 AM', 'Quick breakfast'],
-                ['8:15 AM', 'Leave for school'],
-                ['3:45 PM', 'Return from school'],
-                ['3:45 - 4:15 PM', 'Break and snack'],
-                ['4:15 - 5:15 PM', 'Homework/college applications'],
-                ['5:15 - 5:45 PM', 'Exercise'],
-                ['5:45 - 6:15 PM', 'Shower and relax'],
-                ['6:15 - 6:45 PM', 'Dinner'],
-                ['6:45 - 8:15 PM', 'Homework/college applications'],
-                ['8:15 - 8:45 PM', 'Break (free time)'],
-                ['8:45 - 9:45 PM', 'Homework/college applications'],
-                ['9:45 - 10:00 PM', 'Prepare for screen-free time'],
-                ['10:00 - 11:00 PM', 'Screen-free activities'],
-                ['11:00 PM', 'Sleep']
-            ],
-            'Friday': [
-                ['7:30 AM', 'Wake up'],
-                ['7:30 - 8:00 AM', 'Morning routine (shower, get ready)'],
-                ['8:00 - 8:15 AM', 'Quick breakfast'],
-                ['8:15 AM', 'Leave for school'],
-                ['3:45 PM', 'Return from school'],
-                ['3:45 - 4:15 PM', 'Break and snack'],
-                ['4:15 - 5:15 PM', 'Homework/college applications'],
-                ['5:15 - 5:45 PM', 'Exercise'],
-                ['5:45 - 6:15 PM', 'Shower and relax'],
-                ['6:15 - 6:45 PM', 'Dinner'],
-                ['6:45 - 8:15 PM', 'Homework/college applications'],
-                ['8:15 - 8:45 PM', 'Break (free time)'],
-                ['8:45 - 9:45 PM', 'Homework/college applications'],
-                ['9:45 - 10:00 PM', 'Prepare for screen-free time'],
-                ['10:00 - 11:00 PM', 'Screen-free activities'],
-                ['11:00 PM', 'Sleep']
-            ],
-            'Saturday': [
-                ['7:30 AM', 'Wake up'],
-                ['7:30 - 8:00 AM', 'Morning routine (shower, get ready)'],
-                ['8:00 - 8:30 AM', 'Breakfast'],
-                ['8:30 - 10:00 AM', 'Homework/college applications'],
-                ['10:00 - 10:30 AM', 'Break'],
-                ['10:30 AM - 12:00 PM', 'Homework/college applications'],
-                ['12:00 - 12:30 PM', 'Lunch'],
-                ['12:30 - 1:30 PM', 'Free time/socialize'],
-                ['1:30 - 3:00 PM', 'Homework/college applications'],
-                ['3:00 - 3:30 PM', 'Exercise'],
-                ['3:30 - 4:00 PM', 'Shower and relax'],
-                ['4:00 - 5:30 PM', 'Homework/college applications'],
-                ['5:30 - 6:00 PM', 'Dinner'],
-                ['6:00 - 7:30 PM', 'Free time/socialize'],
-                ['7:30 - 9:30 PM', 'Homework/college applications'],
-                ['9:30 - 10:00 PM', 'Prepare for screen-free time'],
-                ['10:00 - 11:00 PM', 'Screen-free activities'],
-                ['11:00 PM', 'Sleep']
-            ],
-            'Sunday': [
-                ['7:30 AM', 'Wake up'],
-                ['7:30 - 8:00 AM', 'Morning routine (shower, get ready)'],
-                ['8:00 - 8:30 AM', 'Teach niece English'],
-                ['8:30 - 9:00 AM', 'Breakfast'],
-                ['9:00 - 10:30 AM', 'Homework/college applications'],
-                ['10:30 - 11:00 AM', 'Break'],
-                ['11:00 AM - 12:00 PM', 'Homework/college applications'],
-                ['12:00 - 12:30 PM', 'Light walk (exercise rest day)'],
-                ['12:30 - 6:30 PM', 'Math Circle'],
-                ['6:30 - 7:00 PM', 'Dinner'],
-                ['7:00 - 8:30 PM', 'Homework/college applications'],
-                ['8:30 - 9:00 PM', 'Break (free time)'],
-                ['9:00 - 9:45 PM', 'Homework/college applications'],
-                ['9:45 - 10:00 PM', 'Prepare for screen-free time'],
-                ['10:00 - 11:00 PM', 'Screen-free activities'],
-                ['11:00 PM', 'Sleep']
-            ]
+        // Schedule data structure with different modes
+        const schedules = {
+            light: {
+                'Monday': [
+                    ['7:30 - 8:15 AM', 'Morning routine: Basic preparation and light breakfast'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Arrival and settling in'],
+                    ['4:00 - 5:30 PM', 'Light homework and rest break'],
+                    ['5:30 - 6:00 PM', 'Gentle walk'],
+                    ['6:00 - 6:15 PM', 'Post-exercise refresh'],
+                    ['6:15 - 7:00 PM', 'Piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:30 PM', 'Light studying and relaxation time'],
+                    ['9:30 - 10:00 PM', 'Prepare for tomorrow'],
+                    ['10:00 - 11:00 PM', 'Screen-free wind down and bedtime'],
+                ],
+                'Tuesday': [
+                    ['7:30 - 8:15 AM', 'Morning routine: Basic preparation and light breakfast'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Arrival and settling in'],
+                    ['4:00 - 5:30 PM', 'Light homework and rest break'],
+                    ['5:30 - 6:00 PM', 'Gentle walk'],
+                    ['6:00 - 6:15 PM', 'Post-exercise refresh'],
+                    ['6:15 - 7:00 PM', 'Piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:30 PM', 'Light studying and relaxation time'],
+                    ['9:30 - 10:00 PM', 'Prepare for tomorrow'],
+                    ['10:00 - 11:00 PM', 'Screen-free wind down and bedtime'],
+                ],
+                'Wednesday': [
+                    ['7:30 - 8:15 AM', 'Morning routine: Basic preparation and light breakfast'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Arrival and settling in'],
+                    ['4:00 - 5:30 PM', 'Light homework and rest break'],
+                    ['5:30 - 6:00 PM', 'Gentle walk'],
+                    ['6:00 - 6:15 PM', 'Post-exercise refresh'],
+                    ['6:15 - 7:15 PM', 'Light studying'],
+                    ['7:15 - 7:30 PM', 'Travel to piano'],
+                    ['7:30 - 8:30 PM', 'Piano lesson'],
+                    ['8:30 - 8:45 PM', 'Travel home'],
+                    ['8:45 - 9:30 PM', 'Light homework/relaxation'],
+                    ['9:30 - 11:00 PM', 'Screen-free wind down and bedtime'],
+                ],
+                'Thursday': [
+                    ['7:30 - 8:15 AM', 'Morning routine: Basic preparation and light breakfast'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Arrival and settling in'],
+                    ['4:00 - 5:30 PM', 'Light homework and rest break'],
+                    ['5:30 - 6:00 PM', 'Gentle walk'],
+                    ['6:00 - 6:15 PM', 'Post-exercise refresh'],
+                    ['6:15 - 7:00 PM', 'Piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:30 PM', 'Light studying and relaxation time'],
+                    ['9:30 - 10:00 PM', 'Prepare for tomorrow'],
+                    ['10:00 - 11:00 PM', 'Screen-free wind down and bedtime'],
+                ],
+                'Friday': [
+                    ['7:30 - 8:15 AM', 'Morning routine: Basic preparation and light breakfast'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Arrival and settling in'],
+                    ['4:00 - 5:30 PM', 'Light homework and rest break'],
+                    ['5:30 - 6:00 PM', 'Gentle walk'],
+                    ['6:00 - 6:15 PM', 'Post-exercise refresh'],
+                    ['6:15 - 7:00 PM', 'Piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:30 PM', 'Light studying and relaxation time'],
+                    ['9:30 - 10:00 PM', 'Prepare for tomorrow'],
+                    ['10:00 - 11:00 PM', 'Screen-free wind down and bedtime'],
+                ],
+                'Saturday': [
+                    ['7:30 - 9:00 AM', 'Flexible morning routine and breakfast'],
+                    ['9:00 - 10:45 AM', 'Light studying or relaxation'],
+                    ['10:45 - 1:05 PM', 'Therapy (including travel)'],
+                    ['1:05 - 2:00 PM', 'Lunch and rest'],
+                    ['2:00 - 3:00 PM', 'Piano practice'],
+                    ['3:00 - 5:00 PM', 'Light homework or free time'],
+                    ['5:00 - 6:00 PM', 'Gentle exercise or walk'],
+                    ['6:00 - 7:00 PM', 'Dinner'],
+                    ['7:00 - 9:30 PM', 'Relaxation/social time'],
+                    ['9:30 - 11:00 PM', 'Wind down and bedtime'],
+                ],
+                'Sunday': [
+                    ['7:30 - 8:00 AM', 'Morning preparation'],
+                    ['8:00 - 8:30 AM', 'Teach niece English'],
+                    ['8:30 - 9:30 AM', 'Breakfast and rest'],
+                    ['9:30 - 12:00 PM', 'Light studying'],
+                    ['12:00 - 12:30 PM', 'Lunch'],
+                    ['12:30 - 6:30 PM', 'Math circle (including travel)'],
+                    ['6:30 - 7:30 PM', 'Dinner and rest'],
+                    ['7:30 - 8:00 PM', 'Piano practice'],
+                    ['8:00 - 9:30 PM', 'Essential homework only'],
+                    ['9:30 - 11:00 PM', 'Wind down and bedtime'],
+                ],
+            },
+            moderate: {
+                'Monday': [
+                    ['7:30 - 7:40 AM', 'Quick stretching/exercise'],
+                    ['7:40 - 8:15 AM', 'Morning routine and breakfast'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Snack and organization time'],
+                    ['4:00 - 5:30 PM', 'Core homework and college apps'],
+                    ['5:30 - 6:15 PM', '30-min moderate exercise + refresh'],
+                    ['6:15 - 7:00 PM', 'Piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:30 PM', 'Focused study and college apps'],
+                    ['9:30 - 10:00 PM', 'Prepare for tomorrow'],
+                    ['10:00 - 11:00 PM', 'Screen-free wind down and bedtime'],
+                ],
+                'Tuesday': [
+                    ['7:30 - 7:40 AM', 'Quick stretching/exercise'],
+                    ['7:40 - 8:15 AM', 'Morning routine and breakfast'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Snack and organization time'],
+                    ['4:00 - 5:30 PM', 'Core homework and college apps'],
+                    ['5:30 - 6:15 PM', '30-min moderate exercise + refresh'],
+                    ['6:15 - 7:00 PM', 'Piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:30 PM', 'Focused study and college apps'],
+                    ['9:30 - 10:00 PM', 'Prepare for tomorrow'],
+                    ['10:00 - 11:00 PM', 'Screen-free wind down and bedtime'],
+                ],
+                'Wednesday': [
+                    ['7:30 - 7:40 AM', 'Quick stretching/exercise'],
+                    ['7:40 - 8:15 AM', 'Morning routine and breakfast'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Snack and organization time'],
+                    ['4:00 - 5:30 PM', 'Core homework and college apps'],
+                    ['5:30 - 6:15 PM', '30-min moderate exercise + refresh'],
+                    ['6:15 - 7:15 PM', 'Study and assignment work'],
+                    ['7:15 - 7:30 PM', 'Travel to piano'],
+                    ['7:30 - 8:30 PM', 'Piano lesson'],
+                    ['8:30 - 8:45 PM', 'Travel home'],
+                    ['8:45 - 9:30 PM', 'Homework completion'],
+                    ['9:30 - 11:00 PM', 'Screen-free wind down and bedtime'],
+                ],
+                'Thursday': [
+                    ['7:30 - 7:40 AM', 'Quick stretching/exercise'],
+                    ['7:40 - 8:15 AM', 'Morning routine and breakfast'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Snack and organization time'],
+                    ['4:00 - 5:30 PM', 'Core homework and college apps'],
+                    ['5:30 - 6:15 PM', '30-min moderate exercise + refresh'],
+                    ['6:15 - 7:00 PM', 'Piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:30 PM', 'Focused study and college apps'],
+                    ['9:30 - 10:00 PM', 'Prepare for tomorrow'],
+                    ['10:00 - 11:00 PM', 'Screen-free wind down and bedtime'],
+                ],
+                'Friday': [
+                    ['7:30 - 7:40 AM', 'Quick stretching/exercise'],
+                    ['7:40 - 8:15 AM', 'Morning routine and breakfast'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Snack and organization time'],
+                    ['4:00 - 5:30 PM', 'Core homework and college apps'],
+                    ['5:30 - 6:15 PM', '30-min moderate exercise + refresh'],
+                    ['6:15 - 7:00 PM', 'Piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:00 PM', 'Study and college apps'],
+                    ['9:00 - 11:00 PM', 'Social time/relaxation'],
+                ],
+                'Saturday': [
+                    ['7:30 - 8:00 AM', 'Morning exercise'],
+                    ['8:00 - 9:00 AM', 'Breakfast and planning'],
+                    ['9:00 - 10:45 AM', 'College apps work'],
+                    ['10:45 - 1:05 PM', 'Therapy (including travel)'],
+                    ['1:05 - 2:00 PM', 'Lunch and rest'],
+                    ['2:00 - 3:00 PM', 'Piano practice'],
+                    ['3:00 - 5:00 PM', 'Balanced study/homework time'],
+                    ['5:00 - 6:00 PM', 'Exercise or outdoor activity'],
+                    ['6:00 - 7:00 PM', 'Dinner'],
+                    ['7:00 - 9:30 PM', 'Mix of study and social time'],
+                    ['9:30 - 11:00 PM', 'Wind down and bedtime'],
+                ],
+                'Sunday': [
+                    ['7:30 - 8:00 AM', 'Morning preparation'],
+                    ['8:00 - 8:30 AM', 'Teach niece English'],
+                    ['8:30 - 9:30 AM', 'Breakfast and planning'],
+                    ['9:30 - 12:00 PM', 'College apps and homework'],
+                    ['12:00 - 12:30 PM', 'Lunch'],
+                    ['12:30 - 6:30 PM', 'Math circle (including travel)'],
+                    ['6:30 - 7:30 PM', 'Dinner and rest'],
+                    ['7:30 - 8:15 PM', 'Piano practice'],
+                    ['8:15 - 9:30 PM', 'Complete remaining homework'],
+                    ['9:30 - 11:00 PM', 'Wind down and bedtime'],
+                ],
+            },
+            focused: {
+                'Monday': [
+                    ['7:30 - 7:45 AM', 'Morning exercise/stretching'],
+                    ['7:45 - 8:00 AM', 'Planning and goals review'],
+                    ['8:00 - 8:15 AM', 'Breakfast and preparation'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Quick snack and organization'],
+                    ['4:00 - 5:30 PM', 'Intensive college apps work'],
+                    ['5:30 - 6:15 PM', '45-min full workout + refresh'],
+                    ['6:15 - 7:00 PM', 'Focused piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:30 PM', 'Deep work: studying/applications'],
+                    ['9:30 - 10:00 PM', 'Next day preparation'],
+                    ['10:00 - 10:30 PM', 'Non-screen academic work'],
+                    ['10:30 - 11:00 PM', 'Wind down and bedtime'],
+                ],
+                'Tuesday': [
+                    ['7:30 - 7:45 AM', 'Morning exercise/stretching'],
+                    ['7:45 - 8:00 AM', 'Planning and goals review'],
+                    ['8:00 - 8:15 AM', 'Breakfast and preparation'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Quick snack and organization'],
+                    ['4:00 - 5:30 PM', 'Intensive college apps work'],
+                    ['5:30 - 6:15 PM', '45-min full workout + refresh'],
+                    ['6:15 - 7:00 PM', 'Focused piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:30 PM', 'Deep work: studying/applications'],
+                    ['9:30 - 10:00 PM', 'Next day preparation'],
+                    ['10:00 - 10:30 PM', 'Non-screen academic work'],
+                    ['10:30 - 11:00 PM', 'Wind down and bedtime'],
+                ],
+                'Wednesday': [
+                    ['7:30 - 7:45 AM', 'Morning exercise/stretching'],
+                    ['7:45 - 8:00 AM', 'Planning and goals review'],
+                    ['8:00 - 8:15 AM', 'Breakfast and preparation'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Quick snack and organization'],
+                    ['4:00 - 5:30 PM', 'Intensive college apps work'],
+                    ['5:30 - 6:15 PM', '45-min full workout + refresh'],
+                    ['6:15 - 7:15 PM', 'Focused study session'],
+                    ['7:15 - 7:30 PM', 'Travel to piano'],
+                    ['7:30 - 8:30 PM', 'Piano lesson'],
+                    ['8:30 - 8:45 PM', 'Travel home'],
+                    ['8:45 - 10:00 PM', 'Complete priority assignments'],
+                    ['10:00 - 11:00 PM', 'Wind down and bedtime'],
+                ],
+                'Thursday': [
+                    ['7:30 - 7:45 AM', 'Morning exercise/stretching'],
+                    ['7:45 - 8:00 AM', 'Planning and goals review'],
+                    ['8:00 - 8:15 AM', 'Breakfast and preparation'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Quick snack and organization'],
+                    ['4:00 - 5:30 PM', 'Intensive college apps work'],
+                    ['5:30 - 6:15 PM', '45-min full workout + refresh'],
+                    ['6:15 - 7:00 PM', 'Focused piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:30 PM', 'Deep work: studying/applications'],
+                    ['9:30 - 10:00 PM', 'Next day preparation'],
+                    ['10:00 - 10:30 PM', 'Non-screen academic work'],
+                    ['10:30 - 11:00 PM', 'Wind down and bedtime'],
+                ],
+                'Friday': [
+                    ['7:30 - 7:45 AM', 'Morning exercise/stretching'],
+                    ['7:45 - 8:00 AM', 'Planning and goals review'],
+                    ['8:00 - 8:15 AM', 'Breakfast and preparation'],
+                    ['8:15 - 9:00 AM', 'Travel to school'],
+                    ['9:00 AM - 3:00 PM', 'School'],
+                    ['3:00 - 3:45 PM', 'Travel home'],
+                    ['3:45 - 4:00 PM', 'Quick snack and organization'],
+                    ['4:00 - 5:30 PM', 'Intensive college apps work'],
+                    ['5:30 - 6:15 PM', '45-min full workout + refresh'],
+                    ['6:15 - 7:00 PM', 'Focused piano practice'],
+                    ['7:00 - 7:30 PM', 'Dinner'],
+                    ['7:30 - 9:00 PM', 'Complete week's priority tasks'],
+                    ['9:00 - 9:30 PM', 'Weekly review and planning'],
+                    ['9:30 - 11:00 PM', 'Relaxation/social time'],
+                ],
+                'Saturday': [
+                    ['7:30 - 8:00 AM', 'Morning workout'],
+                    ['8:00 - 8:30 AM', 'Breakfast'],
+                    ['8:30 - 9:00 AM', 'Weekly planning session'],
+                    ['9:00 - 10:45 AM', 'Intensive college apps work'],
+                    ['10:45 - 1:05 PM', 'Therapy (including travel)'],
+                    ['1:05 - 1:45 PM', 'Lunch'],
+                    ['1:45 - 3:00 PM', 'Deep study session'],
+                    ['3:00 - 4:00 PM', 'Focused piano practice'],
+                    ['4:00 - 5:30 PM', 'College apps and essays'],
+                    ['5:30 - 6:30 PM', 'Exercise/workout'],
+                    ['6:30 - 7:30 PM', 'Dinner and short break'],
+                    ['7:30 - 9:30 PM', 'Final study session/applications'],
+                    ['9:30 - 11:00 PM', 'Wind down and bedtime'],
+                ],
+                'Sunday': [
+                    ['7:30 - 8:00 AM', 'Morning preparation and planning'],
+                    ['8:00 - 8:30 AM', 'Teach niece English'],
+                    ['8:30 - 9:00 AM', 'Breakfast'],
+                    ['9:00 - 12:00 PM', 'Intensive college apps/homework'],
+                    ['12:00 - 12:30 PM', 'Lunch'],
+                    ['12:30 - 6:30 PM', 'Math circle (including travel)'],
+                    ['6:30 - 7:15 PM', 'Dinner'],
+                    ['7:15 - 8:00 PM', 'Focused piano practice'],
+                    ['8:00 - 9:45 PM', 'Complete priority assignments'],
+                    ['9:45 - 11:00 PM', 'Prepare for week and bedtime'],
+                ],
+            }
         };
+
+        let currentMode = 'light';
+
+        // Mode switcher functionality
+        document.querySelectorAll('.mode-option').forEach(option => {
+            option.addEventListener('click', () => {
+                // Update active state
+                document.querySelector('.mode-option.active').classList.remove('active');
+                option.classList.add('active');
+                
+                // Update current mode and refresh schedule
+                currentMode = option.dataset.mode;
+                displaySchedule();
+                
+                // Save preference to localStorage
+                localStorage.setItem('scheduleMode', currentMode);
+            });
+        });
+
+        // Load saved preference
+        const savedMode = localStorage.getItem('scheduleMode');
+        if (savedMode) {
+            currentMode = savedMode;
+            document.querySelector('.mode-option.active').classList.remove('active');
+            document.querySelector(`[data-mode="${savedMode}"]`).classList.add('active');
+        }
 
         function parseTime(timeStr, isPm) {
             let timeList = timeStr.split(':')
@@ -269,16 +533,12 @@
         }
 
         function parseTimeRange(timeStr) {
-            // For single time points (like "7:30 AM")
             if (!timeStr.includes('-')) {
                 const start = parseTime(timeStr);
                 if (start === null) return { start: null, end: null };
                 return { start, end: start };
             }
-
-            // Formatted like 7:30 - 8:00 
             
-            // Split into start and end times
             const [startStr, endStr] = timeStr.split('-').map(t => t.trim());
           
             let len_startstr = startStr.length
@@ -300,17 +560,16 @@
               is_pm1 = true;
             }
 
-
             let start = parseTime(startStr, is_pm1);
             let end = parseTime(endStr, is_pm2);
             
             return { start, end };
         }
+
         function isCurrentTimeBlock(timeStr) {
             const now = new Date();
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
             
-            // Special handling for sleep block
             if (timeStr === '11:00 PM') {
                 const sleepStart = parseTime('11:00', true);
                 const wakeTime = parseTime('7:30', false);
@@ -319,24 +578,16 @@
 
             const { start, end } = parseTimeRange(timeStr);
 
-            // For time ranges (blocks)
             if (timeStr.includes('-')) {
-                console.log(timeStr)
-                console.log(start)
-                console.log(end)
-                console.log(currentMinutes)
-                console.log("break")
                 return currentMinutes >= start && currentMinutes < end;
             }
             
-            // For single point events (like wake up)
             return currentMinutes >= start && currentMinutes < (start + 1);
         }
 
         function updateDateTime() {
             const now = new Date();
             
-            // Update date
             const dateOptions = { 
                 weekday: 'long', 
                 year: 'numeric', 
@@ -345,7 +596,6 @@
             };
             document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
             
-            // Update time
             const timeOptions = {
                 hour: 'numeric',
                 minute: '2-digit',
@@ -358,7 +608,7 @@
             const scheduleContent = document.getElementById('scheduleContent');
             const now = new Date();
             const weekday = now.toLocaleString('en-US', { weekday: 'long' });
-            const daySchedule = schedule[weekday];
+            const daySchedule = schedules[currentMode][weekday];
 
             if (daySchedule) {
                 scheduleContent.innerHTML = daySchedule.map(([time, activity]) => `
