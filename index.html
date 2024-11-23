@@ -2,180 +2,130 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Daily Schedule Widget</title>
+    <title>Daily Schedule</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
+        /* Root variables for light mode */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #000000;
+            --item-bg: #f9f9f9;
+            --item-border: #e0e0e0;
+            --checkbox-color: #007aff;
         }
-        .schedule {
+
+        /* Override variables for dark mode */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #1e1e1e;
+                --text-color: #ffffff;
+                --item-bg: #2c2c2c;
+                --item-border: #3d3d3d;
+                --checkbox-color: #0a84ff;
+            }
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
             max-width: 600px;
             margin: auto;
         }
-        .time-slot {
+
+        li {
+            background-color: var(--item-bg);
+            border: 1px solid var(--item-border);
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
             display: flex;
             align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
         }
-        .time {
-            font-weight: bold;
-            width: 150px;
+
+        input[type="checkbox"] {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            accent-color: var(--checkbox-color);
         }
-        .activity {
+
+        label {
             flex-grow: 1;
+            cursor: pointer;
         }
-        .activity.completed {
+
+        .completed label {
             text-decoration: line-through;
-            color: #888;
+            color: gray;
         }
-        .checkbox {
-            margin-left: 10px;
-        }
-        .activity-type {
-            font-size: 0.9em;
-            color: #555;
-        }
-        /* Color-coding activities */
-        .activity.Exercise { color: #4CAF50; }
-        .activity['Work/Study'] { color: #2196F3; }
-        .activity.Socializing { color: #FF9800; }
-        .activity.Hobbies { color: #9C27B0; }
-        .activity.Relaxation { color: #795548; }
     </style>
 </head>
 <body>
-    <div class="schedule">
-        <!-- Schedule will be loaded here -->
-    </div>
+
+    <h1>Daily Schedule</h1>
+    <ul id="schedule-list"></ul>
 
     <script>
-        // Schedule Data
         const schedule = [
-            {
-                time: "8:00 AM - 9:00 AM",
-                activityType: "Exercise",
-                details: "Morning workout",
-                completed: false
-            },
-            {
-                time: "9:00 AM - 12:00 PM",
-                activityType: "Work/Study",
-                details: "UC application essays",
-                completed: false
-            },
-            {
-                time: "12:00 PM - 1:00 PM",
-                activityType: "Socializing",
-                details: "Lunch with a friend or family member",
-                completed: false
-            },
-            {
-                time: "1:00 PM - 4:00 PM",
-                activityType: "Work/Study",
-                details: "Review application requirements",
-                completed: false
-            },
-            {
-                time: "4:00 PM - 5:00 PM",
-                activityType: "Exercise",
-                details: "Afternoon walk or yoga session",
-                completed: false
-            },
-            {
-                time: "5:00 PM - 7:00 PM",
-                activityType: "Hobbies",
-                details: "Engage in a hobby (e.g., painting)",
-                completed: false
-            },
-            {
-                time: "7:00 PM - 8:00 PM",
-                activityType: "Socializing",
-                details: "Dinner with family",
-                completed: false
-            },
-            {
-                time: "8:00 PM - 10:00 PM",
-                activityType: "Work/Study",
-                details: "Finalize any pending application tasks",
-                completed: false
-            },
-            {
-                time: "10:00 PM onwards",
-                activityType: "Relaxation",
-                details: "Read a book, meditation, sleep prep",
-                completed: false
-            }
+            { time: '8:00 am – 9:00 am', activity: 'Wake up, morning routine' },
+            { time: '9:00 am – 11:00 am', activity: 'Study time' },
+            { time: '11:00 am – 12:00 pm', activity: 'Exercise' },
+            { time: '12:00 pm – 1:00 pm', activity: 'Lunch break' },
+            { time: '1:00 pm – 3:00 pm', activity: 'Hobbies' },
+            { time: '3:00 pm – 5:00 pm', activity: 'Hang out with friends/family' },
+            { time: '5:00 pm – 6:00 pm', activity: 'Free time' },
+            { time: '6:00 pm – 7:00 pm', activity: 'Dinner' },
+            { time: '7:00 pm – 9:00 pm', activity: 'Study time' },
+            { time: '9:00 pm – 10:00 pm', activity: 'Wind down' },
+            { time: '10:00 pm – 11:00 pm', activity: 'Sleep preparation' }
         ];
 
-        // Load Schedule
-        function loadSchedule() {
-            const scheduleContainer = document.querySelector('.schedule');
-            scheduleContainer.innerHTML = ''; // Clear existing content
-            schedule.forEach((item, index) => {
-                const timeSlotDiv = document.createElement('div');
-                timeSlotDiv.className = 'time-slot';
+        const scheduleList = document.getElementById('schedule-list');
 
-                const timeDiv = document.createElement('div');
-                timeDiv.className = 'time';
-                timeDiv.textContent = item.time;
+        // Load saved state from localStorage
+        let completedActivities = JSON.parse(localStorage.getItem('completedActivities')) || [];
 
-                const activityDiv = document.createElement('div');
-                activityDiv.className = `activity ${item.activityType}`;
-                activityDiv.textContent = item.details;
-                if (item.completed) {
-                    activityDiv.classList.add('completed');
+        schedule.forEach((item, index) => {
+            const li = document.createElement('li');
+            li.classList.toggle('completed', completedActivities.includes(index));
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.checked = completedActivities.includes(index);
+            checkbox.id = 'activity-' + index;
+
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    completedActivities.push(index);
+                    li.classList.add('completed');
+                } else {
+                    completedActivities = completedActivities.filter(i => i !== index);
+                    li.classList.remove('completed');
                 }
-
-                const activityTypeDiv = document.createElement('div');
-                activityTypeDiv.className = 'activity-type';
-                activityTypeDiv.textContent = item.activityType;
-
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.className = 'checkbox';
-                checkbox.checked = item.completed;
-                checkbox.addEventListener('change', () => {
-                    item.completed = checkbox.checked;
-                    saveSchedule();
-                    loadSchedule(); // Reload to update styles
-                });
-
-                const activityContainer = document.createElement('div');
-                activityContainer.style.display = 'flex';
-                activityContainer.style.flexDirection = 'column';
-                activityContainer.appendChild(activityDiv);
-                activityContainer.appendChild(activityTypeDiv);
-
-                timeSlotDiv.appendChild(timeDiv);
-                timeSlotDiv.appendChild(activityContainer);
-                timeSlotDiv.appendChild(checkbox);
-
-                scheduleContainer.appendChild(timeSlotDiv);
+                localStorage.setItem('completedActivities', JSON.stringify(completedActivities));
             });
-        }
 
-        // Save Schedule to Local Storage
-        function saveSchedule() {
-            localStorage.setItem('scheduleData', JSON.stringify(schedule));
-        }
+            const label = document.createElement('label');
+            label.htmlFor = 'activity-' + index;
+            label.innerHTML = `<strong>${item.time}</strong>: ${item.activity}`;
 
-        // Load Schedule from Local Storage
-        function loadSavedSchedule() {
-            const savedData = localStorage.getItem('scheduleData');
-            if (savedData) {
-                const savedSchedule = JSON.parse(savedData);
-                // Update the schedule array with saved completed status
-                schedule.forEach((item, index) => {
-                    item.completed = savedSchedule[index].completed;
-                });
-            }
-        }
-
-        // Initialize
-        loadSavedSchedule();
-        loadSchedule();
+            li.appendChild(checkbox);
+            li.appendChild(label);
+            scheduleList.appendChild(li);
+        });
     </script>
+
 </body>
 </html>
