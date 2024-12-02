@@ -1,131 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Daily Schedule</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        /* Root variables for light mode */
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #000000;
-            --item-bg: #f9f9f9;
-            --item-border: #e0e0e0;
-            --checkbox-color: #007aff;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Schedule</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    transition: background-color 0.3s, color 0.3s;
+  }
 
-        /* Override variables for dark mode */
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --bg-color: #1e1e1e;
-                --text-color: #ffffff;
-                --item-bg: #2c2c2c;
-                --item-border: #3d3d3d;
-                --checkbox-color: #0a84ff;
-            }
-        }
+  /* Light mode */
+  body {
+    background-color: #ffffff;
+    color: #000000;
+  }
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            transition: background-color 0.3s, color 0.3s;
-        }
+  /* Dark mode */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: #1e1e1e;
+      color: #ffffff;
+    }
+  }
 
-        h1 {
-            text-align: center;
-        }
+  h1 {
+    text-align: center;
+  }
 
-        ul {
-            list-style: none;
-            padding: 0;
-            max-width: 600px;
-            margin: auto;
-        }
+  .schedule {
+    max-width: 600px;
+    margin: 0 auto;
+  }
 
-        li {
-            background-color: var(--item-bg);
-            border: 1px solid var(--item-border);
-            border-radius: 5px;
-            padding: 15px;
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-        }
+  .time-slot {
+    margin-bottom: 15px;
+  }
 
-        input[type="checkbox"] {
-            margin-right: 15px;
-            width: 20px;
-            height: 20px;
-            accent-color: var(--checkbox-color);
-        }
+  .time-slot h3 {
+    margin: 0;
+  }
 
-        label {
-            flex-grow: 1;
-            cursor: pointer;
-        }
-
-        .completed label {
-            text-decoration: line-through;
-            color: gray;
-        }
-    </style>
+  .time-slot p {
+    margin: 5px 0 0 0;
+  }
+</style>
 </head>
 <body>
 
-    <h1>Daily Schedule</h1>
-    <ul id="schedule-list"></ul>
+<h1 id="day-title">Today's Schedule</h1>
+<div class="schedule" id="schedule"></div>
 
-    <script>
-        const schedule = [
-            { time: '8:00 am – 9:00 am', activity: 'Wake up, morning routine' },
-            { time: '9:00 am – 11:00 am', activity: 'Study time' },
-            { time: '11:00 am – 12:00 pm', activity: 'Exercise' },
-            { time: '12:00 pm – 1:00 pm', activity: 'Lunch break' },
-            { time: '1:00 pm – 3:00 pm', activity: 'Hobbies' },
-            { time: '3:00 pm – 5:00 pm', activity: 'Hang out with friends/family' },
-            { time: '5:00 pm – 6:00 pm', activity: 'Free time' },
-            { time: '6:00 pm – 7:00 pm', activity: 'Dinner' },
-            { time: '7:00 pm – 9:00 pm', activity: 'Study time' },
-            { time: '9:00 pm – 10:00 pm', activity: 'Wind down' },
-            { time: '10:00 pm – 11:00 pm', activity: 'Sleep preparation' }
-        ];
+<script>
+  const scheduleData = {
+    "Monday": [
+      { time: "7:30 am – 8:00 am", activity: "Wake up, get ready, and have breakfast." },
+      { time: "8:00 am – 8:30 am", activity: "Drive to school." },
+      { time: "9:00 am – 3:00 pm", activity: "School." },
+      { time: "3:00 pm – 5:00 pm", activity: "Hang out with friends after school." },
+      { time: "5:00 pm – 5:45 pm", activity: "Get picked up and drive home." },
+      { time: "5:45 pm – 6:15 pm", activity: "Snack and rest." },
+      { time: "6:15 pm – 7:15 pm", activity: "Exercise." },
+      { time: "7:15 pm – 7:45 pm", activity: "Shower." },
+      { time: "7:45 pm – 8:15 pm", activity: "Dinner." },
+      { time: "8:15 pm – 10:15 pm", activity: "Study/Homework (2 hours)." },
+      { time: "10:15 pm – 10:45 pm", activity: "Piano practice (30 minutes)." },
+      { time: "10:45 pm – 11:00 pm", activity: "Wind down and leisure time." },
+      { time: "11:00 pm", activity: "Sleep." }
+    ],
+    "Tuesday": [
+      { time: "7:30 am – 8:00 am", activity: "Wake up, get ready, and have breakfast." },
+      { time: "8:00 am – 8:30 am", activity: "Drive to school." },
+      { time: "9:00 am – 3:00 pm", activity: "School." },
+      { time: "3:00 pm – 3:45 pm", activity: "Drive home." },
+      { time: "3:45 pm – 4:15 pm", activity: "Snack and rest." },
+      { time: "4:15 pm – 6:15 pm", activity: "Study/Homework (2 hours)." },
+      { time: "6:15 pm – 7:15 pm", activity: "Exercise." },
+      { time: "7:15 pm – 7:45 pm", activity: "Shower." },
+      { time: "7:45 pm – 8:15 pm", activity: "Dinner." },
+      { time: "8:15 pm – 8:45 pm", activity: "Piano practice (30 minutes)." },
+      { time: "8:45 pm – 10:45 pm", activity: "Leisure time or call friends." },
+      { time: "11:00 pm", activity: "Sleep." }
+    ],
+    "Wednesday": [
+      { time: "7:30 am – 8:00 am", activity: "Wake up, get ready, and have breakfast." },
+      { time: "8:00 am – 8:30 am", activity: "Drive to school." },
+      { time: "9:00 am – 3:00 pm", activity: "School." },
+      { time: "3:00 pm – 5:00 pm", activity: "Hang out with friends after school." },
+      { time: "5:00 pm – 5:45 pm", activity: "Get picked up and drive home." },
+      { time: "5:45 pm – 6:15 pm", activity: "Snack and rest." },
+      { time: "6:15 pm – 7:15 pm", activity: "Exercise." },
+      { time: "7:15 pm – 7:30 pm", activity: "Prepare for piano lesson." },
+      { time: "7:30 pm – 8:30 pm", activity: "Piano Lesson." },
+      { time: "8:30 pm – 8:45 pm", activity: "Drive back home." },
+      { time: "8:45 pm – 9:15 pm", activity: "Dinner." },
+      { time: "9:15 pm – 10:15 pm", activity: "Study/Homework (1 hour)." },
+      { time: "10:15 pm – 10:45 pm", activity: "Shower and wind down." },
+      { time: "11:00 pm", activity: "Sleep." }
+    ],
+    "Thursday": [
+      { time: "7:30 am – 8:00 am", activity: "Wake up, get ready, and have breakfast." },
+      { time: "8:00 am – 8:30 am", activity: "Drive to school." },
+      { time: "9:00 am – 3:00 pm", activity: "School." },
+      { time: "3:00 pm – 3:45 pm", activity: "Drive home." },
+      { time: "3:45 pm – 4:15 pm", activity: "Snack and rest." },
+      { time: "4:15 pm – 6:15 pm", activity: "Study/Homework (2 hours)." },
+      { time: "6:15 pm – 7:15 pm", activity: "Exercise." },
+      { time: "7:15 pm – 7:45 pm", activity: "Shower." },
+      { time: "7:45 pm – 8:15 pm", activity: "Dinner." },
+      { time: "8:15 pm – 8:45 pm", activity: "Piano practice (30 minutes)." },
+      { time: "8:45 pm – 10:45 pm", activity: "Leisure time or call friends." },
+      { time: "11:00 pm", activity: "Sleep." }
+    ],
+    "Friday": [
+      { time: "7:30 am – 8:00 am", activity: "Wake up, get ready, and have breakfast." },
+      { time: "8:00 am – 8:30 am", activity: "Drive to school." },
+      { time: "9:00 am – 3:00 pm", activity: "School." },
+      { time: "3:00 pm – 6:00 pm", activity: "Hang out with friends after school." },
+      { time: "6:00 pm – 6:45 pm", activity: "Get picked up and drive home." },
+      { time: "6:45 pm – 7:15 pm", activity: "Snack and rest." },
+      { time: "7:15 pm – 8:15 pm", activity: "Exercise." },
+      { time: "8:15 pm – 8:45 pm", activity: "Shower." },
+      { time: "8:45 pm – 9:15 pm", activity: "Dinner." },
+      { time: "9:15 pm – 10:45 pm", activity: "Leisure time or call friends." },
+      { time: "11:00 pm", activity: "Sleep." }
+    ],
+    "Saturday": [
+      { time: "7:30 am – 8:00 am", activity: "Wake up and have breakfast." },
+      { time: "8:00 am – 10:00 am", activity: "Study/Homework (2 hours)." },
+      { time: "10:00 am – 10:45 am", activity: "Prepare for therapy session." },
+      { time: "10:45 am – 1:15 pm", activity: "Therapy Session (including commute)." },
+      { time: "1:15 pm – 1:45 pm", activity: "Lunch." },
+      { time: "1:45 pm – 3:15 pm", activity: "Exercise and Shower." },
+      { time: "3:15 pm – 7:15 pm", activity: "Socializing with friends." },
+      { time: "7:15 pm – 7:45 pm", activity: "Dinner." },
+      { time: "7:45 pm – 9:45 pm", activity: "Study/Homework (2 hours)." },
+      { time: "9:45 pm – 10:45 pm", activity: "Leisure time or wind down." },
+      { time: "11:00 pm", activity: "Sleep." }
+    ],
+    "Sunday": [
+      { time: "7:30 am – 8:00 am", activity: "Wake up and have breakfast." },
+      { time: "8:00 am – 9:00 am", activity: "Exercise." },
+      { time: "9:00 am – 9:30 am", activity: "Shower." },
+      { time: "9:30 am – 10:00 am", activity: "Snack." },
+      { time: "10:00 am – 12:00 pm", activity: "Study/Homework (2 hours)." },
+      { time: "12:00 pm – 12:30 pm", activity: "Lunch and prepare for math circle." },
+      { time: "12:30 pm – 6:30 pm", activity: "Math Circle (including commute)." },
+      { time: "6:30 pm – 7:00 pm", activity: "Return home." },
+      { time: "7:00 pm – 7:30 pm", activity: "Dinner." },
+      { time: "7:30 pm – 8:00 pm", activity: "Piano practice (30 minutes)." },
+      { time: "8:00 pm – 10:30 pm", activity: "Leisure time or call friends." },
+      { time: "11:00 pm", activity: "Sleep." }
+    ]
+  };
 
-        const scheduleList = document.getElementById('schedule-list');
+  function displaySchedule() {
+    const scheduleContainer = document.getElementById('schedule');
+    const dayTitle = document.getElementById('day-title');
 
-        // Load saved state from localStorage
-        let completedActivities = JSON.parse(localStorage.getItem('completedActivities')) || [];
+    // Get current day name
+    const today = new Date();
+    const options = { weekday: 'long' };
+    const dayName = today.toLocaleDateString('en-US', options);
 
-        schedule.forEach((item, index) => {
-            const li = document.createElement('li');
-            li.classList.toggle('completed', completedActivities.includes(index));
+    dayTitle.textContent = `${dayName}'s Schedule`;
 
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.checked = completedActivities.includes(index);
-            checkbox.id = 'activity-' + index;
+    // Get today's schedule
+    const todaysSchedule = scheduleData[dayName];
 
-            checkbox.addEventListener('change', () => {
-                if (checkbox.checked) {
-                    completedActivities.push(index);
-                    li.classList.add('completed');
-                } else {
-                    completedActivities = completedActivities.filter(i => i !== index);
-                    li.classList.remove('completed');
-                }
-                localStorage.setItem('completedActivities', JSON.stringify(completedActivities));
-            });
+    // Clear any existing content
+    scheduleContainer.innerHTML = '';
 
-            const label = document.createElement('label');
-            label.htmlFor = 'activity-' + index;
-            label.innerHTML = `<strong>${item.time}</strong>: ${item.activity}`;
+    // Populate schedule
+    if (todaysSchedule) {
+      todaysSchedule.forEach(item => {
+        const timeSlot = document.createElement('div');
+        timeSlot.className = 'time-slot';
 
-            li.appendChild(checkbox);
-            li.appendChild(label);
-            scheduleList.appendChild(li);
-        });
-    </script>
+        const time = document.createElement('h3');
+        time.textContent = item.time;
+        timeSlot.appendChild(time);
+
+        const activity = document.createElement('p');
+        activity.textContent = item.activity;
+        timeSlot.appendChild(activity);
+
+        scheduleContainer.appendChild(timeSlot);
+      });
+    } else {
+      scheduleContainer.textContent = 'No schedule available for today.';
+    }
+  }
+
+  // Display the schedule on page load
+  window.onload = displaySchedule;
+</script>
 
 </body>
 </html>
